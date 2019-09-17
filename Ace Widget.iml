@@ -7,5 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="BreezySwing" level="project" />
+    <orderEntry type="library" name="TerminalIO" level="project" />
   </component>
 </module>
