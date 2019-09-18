@@ -11,7 +11,7 @@ public class AceWidgetGUI extends GBFrame {
     private JButton addEmployee = addButton("Add Employee", 1, 1, 1, 1);
     private JTextArea tableHeader = addTextArea("", 1, 3, 1, 1);
     private final int COLUMNS = 50;
-    private EmployeeGUI employeeGui = new EmployeeGUI(frame);
+    private EmployeeGUI employeeGui = new EmployeeGUI(frame, this);
     String table;
 
     class EmployeeGUI extends GBDialog {
@@ -30,23 +30,30 @@ public class AceWidgetGUI extends GBFrame {
         private JButton addEmployee = addButton("Add", 6, 1, 1, 1);
         int[] quarters;
         JTextField[] fields;
-        public EmployeeGUI(JFrame parent) {
+        AceWidgetGUI gui;
+        public EmployeeGUI(JFrame parent, AceWidgetGUI gui) {
             super(parent);
+            this.gui = gui;
             this.setTitle("Add Employee");
             this.setSize(400, 400);
-            fields[0] = quarterOneField;
-            fields[1] = quarterTwoField;
-            fields[2] = quarterThreeField;
-            fields[3] = quarterFourField;
+            fields = new JTextField[5];
+            quarters = new int[4];
+            fields[0] = employeeNameField;
+            fields[1] = quarterOneField;
+            fields[2] = quarterTwoField;
+            fields[3] = quarterThreeField;
+            fields[4] = quarterFourField;
         }
-        public void buttonClick(JButton jButton) {
+        public void buttonClicked(JButton jButton) {
             if(errorCheck()) {
                 messageBox("Invalid Data Set");
                 for(JTextField field : fields)
                     field.setText("");
             }
-            if(jButton.equals(addEmployee))
+            if(jButton.equals(addEmployee)) {
                 e = new Employee(employeeNameField.getText(), quarters);
+                gui.addEmployee(e);
+            }
         }
         public JFrame getFrame() {
             return frame;
@@ -66,6 +73,8 @@ public class AceWidgetGUI extends GBFrame {
 
     }
 
+
+
     public static void main(String[] args) {
 
         frame.setTitle("Ace Widget Employee Sales");
@@ -81,7 +90,7 @@ public class AceWidgetGUI extends GBFrame {
         String q3Label = Format.justify('c', quarters[2], COLUMNS);
         String q4Label = Format.justify('c', quarters[3], COLUMNS);
         String add = "\n" + name + q1Label + q2Label + q3Label + q4Label;
-        table = table + add;
+        tableHeader.append(add);
     }
 
 
