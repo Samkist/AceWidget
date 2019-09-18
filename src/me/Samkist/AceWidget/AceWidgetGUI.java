@@ -71,7 +71,6 @@ public class AceWidgetGUI extends GBFrame {
         frame.setTitle("Ace Widget Employee Sales");
         frame.setSize(800, 400);
         frame.setVisible(true);
-        System.out.println("????");
     }
 
     public void addEmployee(Employee emp) {
