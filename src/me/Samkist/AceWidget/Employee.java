@@ -12,17 +12,17 @@ public class Employee {
 
     private String name;
 
-    public int[] getQuarters() {
+    public double[] getQuarters() {
         return quarters;
     }
 
-    public void setQuarters(int[] quarters) {
+    public void setQuarters(double[] quarters) {
         this.quarters = quarters;
     }
 
-    private int[] quarters;
+    private double[] quarters;
 
-    public Employee(String name, int[] quarters) {
+    public Employee(String name, double[] quarters) {
         this.name = name;
         this.quarters = quarters;
     }
