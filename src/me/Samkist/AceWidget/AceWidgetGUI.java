@@ -11,9 +11,21 @@ public class AceWidgetGUI extends GBFrame {
     private static JFrame frame = new AceWidgetGUI();
     private JButton addEmployee = addButton("Add Employee", 2, 1, 1, 1);
     private JTextArea tableHeader = addTextArea("", 1, 1, 3, 1);
-    private JList employeeList = addList(3, 1, 3, 1);
     private final int COLUMNS = 50;
     private EmployeeGUI employeeGui = new EmployeeGUI(frame, this);
+    private FindEmployeeGUI findEmployeeGui = new FindEmployeeGUI(frame, this);
+    private JButton findEmployee = addButton("Find Employee", 2, 2, 1, 1);
+
+    public Employee[] getEmployeeList() {
+        return employeeList;
+    }
+
+    private Employee[] employeeList = new Employee[10];
+
+    public DecimalFormat getFormatter() {
+        return formatter;
+    }
+
     DecimalFormat formatter = new DecimalFormat("$0.00");
     String table;
 
@@ -86,14 +98,54 @@ public class AceWidgetGUI extends GBFrame {
 
     }
 
+    class FindEmployeeGUI extends GBDialog {
+        AceWidgetGUI gui;
+        JList employeeList = addList(1, 1 , 2, 1);
+        JTextArea employeeDetails = addTextArea("", 1, 2, 2,1 );
+
+        public FindEmployeeGUI(JFrame parent, AceWidgetGUI gui) {
+            super(parent);
+            this.gui = gui;
+            employeeDetails.setEditable(false);
+            this.setTitle("Add Employee");
+            this.setSize(400, 400);
+            for(Employee emp : gui.getEmployeeList()) {
+                addListItem(emp.getName());
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        public void addListItem(String add) {
+            DefaultListModel model = (DefaultListModel)employeeList.getModel();
+            model.addElement(add);
+        }
+
+        public void updateEmployeeDetails(Employee emp) {
+            double[] quarters = emp.getQuarters();
+            employeeDetails.setText("" +
+                    "Name: " + emp.getName()
+                    + "Q1: " + gui.getFormatter().format(quarters[0])
+                    + "Q2: " + gui.getFormatter().format(quarters[1])
+                    + "Q3: " + gui.getFormatter().format(quarters[2])
+                    + "Q4: " + gui.getFormatter().format(quarters[3])
+                    + "");
+        }
+
+        public void listItemSelected (JList listObj) {
+            if(listObj.equals(employeeList)) {
+                updateEmployeeDetails(gui.getEmployeeList()[listObj.getSelectedIndex()]);
+            }
+        }
+    }
+
     public AceWidgetGUI() {
         tableHeader.setEditable(false);
         String name = Format.justify('l', "Name", 10);
-        String q1Label = Format.justify('c', "Q1", COLUMNS);
-        String q2Label = Format.justify('c', "Q2", COLUMNS);
-        String q3Label = Format.justify('c', "Q3", COLUMNS);
-        String q4Label = Format.justify('c', "Q4", COLUMNS);
-        String totalLabel = Format.justify('c', "Total", COLUMNS);
+        String q1Label = Format.justify('l', "  Q1", COLUMNS);
+        String q2Label = Format.justify('l', "  Q2", COLUMNS);
+        String q3Label = Format.justify('l', "  Q3", COLUMNS);
+        String q4Label = Format.justify('l', "  Q4", COLUMNS);
+        String totalLabel = Format.justify('l', "Total", COLUMNS);
         String lineBreak = "————————————————————————————————————————————————————————————————————";
         table = name+q1Label+q2Label+q3Label+q4Label+totalLabel + "\n" + lineBreak;
         tableHeader.setText(table);
@@ -103,11 +155,18 @@ public class AceWidgetGUI extends GBFrame {
     public static void main(String[] args) {
 
         frame.setTitle("Ace Widget Employee Sales");
-        frame.setSize(1000, 400);
+        frame.setSize(800, 400);
         frame.setVisible(true);
     }
 
     public void addEmployee(Employee emp) {
+        for(int i = 0; i < employeeList.length; i++) {
+            if(employeeList[i] == null) {
+                employeeList[i] = emp;
+            } if(employeeList[i] != null && i + 1 == employeeList.length) {
+                messageBox("Could not add anymore employees!");
+            }
+        }
         double[] quarters = emp.getQuarters();
         double total = quarters[0] + quarters[1] + quarters[2] + quarters[3];
         String name = Format.justify('l', emp.getName(), 10);
@@ -124,6 +183,9 @@ public class AceWidgetGUI extends GBFrame {
     public void buttonClicked(JButton jButton) {
         if(jButton.equals(addEmployee))
             employeeGui.setVisible(true);
+        if(jButton.equals(findEmployee))
+            findEmployeeGui.setVisible(true);
+
     }
 
     public static JFrame getInstance() {
