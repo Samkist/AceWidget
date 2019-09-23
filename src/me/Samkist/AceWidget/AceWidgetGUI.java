@@ -13,14 +13,16 @@ public class AceWidgetGUI extends GBFrame {
     private JTextArea tableHeader = addTextArea("", 1, 1, 3, 1);
     private final int COLUMNS = 50;
     private EmployeeGUI employeeGui = new EmployeeGUI(frame, this);
-    private FindEmployeeGUI findEmployeeGui = new FindEmployeeGUI(frame, this);
+    private Employee[] employeeList = new Employee[10];
+    private FindEmployeeGUI findEmployeeGui = new FindEmployeeGUI(frame, this, employeeList);
     private JButton findEmployee = addButton("Find Employee", 2, 2, 1, 1);
+    private JButton findLowestSales = addButton("Lowest Sales", 2, 3 , 1 ,1);
+    private JButton findHighestSales = addButton("Lowest Sales", 2, 3 , 1 ,1);
+    private Sales sales = new Sales();
 
     public Employee[] getEmployeeList() {
         return employeeList;
     }
-
-    private Employee[] employeeList = new Employee[10];
 
     public DecimalFormat getFormatter() {
         return formatter;
@@ -100,18 +102,15 @@ public class AceWidgetGUI extends GBFrame {
 
     class FindEmployeeGUI extends GBDialog {
         AceWidgetGUI gui;
-        JList employeeList = addList(1, 1 , 2, 1);
-        JTextArea employeeDetails = addTextArea("", 1, 2, 2,1 );
+        JList employeeList = addList(1, 1 , 1, 1);
+        JTextArea employeeDetails = addTextArea("", 1, 3, 2,1 );
 
-        public FindEmployeeGUI(JFrame parent, AceWidgetGUI gui) {
+        public FindEmployeeGUI(JFrame parent, AceWidgetGUI gui, Employee[] empArr) {
             super(parent);
             this.gui = gui;
             employeeDetails.setEditable(false);
             this.setTitle("Add Employee");
             this.setSize(400, 400);
-            for(Employee emp : gui.getEmployeeList()) {
-                addListItem(emp.getName());
-            }
         }
 
         @SuppressWarnings("unchecked")
@@ -123,11 +122,11 @@ public class AceWidgetGUI extends GBFrame {
         public void updateEmployeeDetails(Employee emp) {
             double[] quarters = emp.getQuarters();
             employeeDetails.setText("" +
-                    "Name: " + emp.getName()
-                    + "Q1: " + gui.getFormatter().format(quarters[0])
-                    + "Q2: " + gui.getFormatter().format(quarters[1])
-                    + "Q3: " + gui.getFormatter().format(quarters[2])
-                    + "Q4: " + gui.getFormatter().format(quarters[3])
+                    "Name: " + emp.getName() + "\n"
+                    + "Q1: " + gui.getFormatter().format(quarters[0]) + "\n"
+                    + "Q2: " + gui.getFormatter().format(quarters[1]) + "\n"
+                    + "Q3: " + gui.getFormatter().format(quarters[2]) + "\n"
+                    + "Q4: " + gui.getFormatter().format(quarters[3]) + "\n"
                     + "");
         }
 
@@ -149,6 +148,7 @@ public class AceWidgetGUI extends GBFrame {
         String lineBreak = "————————————————————————————————————————————————————————————————————";
         table = name+q1Label+q2Label+q3Label+q4Label+totalLabel + "\n" + lineBreak;
         tableHeader.setText(table);
+        findEmployee.setEnabled(false);
 
     }
 
@@ -161,10 +161,25 @@ public class AceWidgetGUI extends GBFrame {
 
     public void addEmployee(Employee emp) {
         for(int i = 0; i < employeeList.length; i++) {
-            if(employeeList[i] == null) {
-                employeeList[i] = emp;
-            } if(employeeList[i] != null && i + 1 == employeeList.length) {
+            if(i + 1 == employeeList.length) {
+                System.out.println(employeeList.length + " " + i);
                 messageBox("Could not add anymore employees!");
+                return;
+            } else if(employeeList[i] == null) {
+                employeeList[i] = emp;
+                if(emp.getTotal() > sales.getHighSales()) {
+                    sales.setHighNames(emp.getName());
+                    sales.setHighSales(emp.getTotal());
+                } else if(emp.getTotal() < sales.getLowSales()) {
+                    sales.setLowNames(emp.getName());
+                    sales.setLowSales(emp.getTotal());
+                 } else if(emp.getTotal() == sales.getLowSales()) {
+                    sales.appendLowName(emp.getName());
+                } else if(emp.getTotal() == sales.getHighSales()) {
+                    sales.appendHighName(emp.getName());
+                }
+                findEmployeeGui.addListItem(emp.getName());
+                break;
             }
         }
         double[] quarters = emp.getQuarters();
@@ -177,6 +192,8 @@ public class AceWidgetGUI extends GBFrame {
         String totalLabel = Format.justify('r', formatter.format(total), COLUMNS - formatter.format(total).length());
         String add = "\n" + name + q1Label + q2Label + q3Label + q4Label + totalLabel;
         tableHeader.append(add);
+        if(!findEmployee.isEnabled())
+            findEmployee.setEnabled(true);
     }
 
 
@@ -185,7 +202,9 @@ public class AceWidgetGUI extends GBFrame {
             employeeGui.setVisible(true);
         if(jButton.equals(findEmployee))
             findEmployeeGui.setVisible(true);
-
+        if(jButton.equals(findLowestSales)) {
+            messageBox("The employee with the highest sales is: " + sales.getHighNames() + ": " + sales.getHighSales() );
+        }
     }
 
     public static JFrame getInstance() {

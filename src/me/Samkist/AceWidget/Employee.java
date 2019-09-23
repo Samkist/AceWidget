@@ -2,6 +2,8 @@ package me.Samkist.AceWidget;
 
 public class Employee {
 
+    double total;
+
     public String getName() {
         return name;
     }
@@ -25,6 +27,13 @@ public class Employee {
     public Employee(String name, double[] quarters) {
         this.name = name;
         this.quarters = quarters;
+        for(double d : quarters) {
+            total += d;
+        }
+    }
+
+    public double getTotal() {
+        return total;
     }
 
 
