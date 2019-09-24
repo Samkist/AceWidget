@@ -45,9 +45,9 @@ public class AceWidgetGUI extends GBFrame {
         private JLabel quarterFourLabel = addLabel("Quarter 4:", 5, 1, 1, 1);
         private JTextField quarterFourField = addTextField("", 5, 2, 1, 1);
         private JButton addEmployee = addButton("Add", 6, 1, 1, 1);
-        double[] quarters;
-        JTextField[] fields;
-        AceWidgetGUI gui;
+        private double[] quarters;
+        private JTextField[] fields;
+        private AceWidgetGUI gui;
 
 
         public EmployeeGUI(JFrame parent, AceWidgetGUI gui) {
