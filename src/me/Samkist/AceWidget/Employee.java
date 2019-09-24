@@ -2,7 +2,7 @@ package me.Samkist.AceWidget;
 
 public class Employee {
 
-    double total;
+    private double total;
 
     public String getName() {
         return name;
