@@ -10,14 +10,14 @@ import java.text.DecimalFormat;
 public class AceWidgetGUI extends GBFrame {
     private static JFrame frame = new AceWidgetGUI();
     private JButton addEmployee = addButton("Add Employee", 2, 1, 1, 1);
-    private JTextArea tableHeader = addTextArea("", 1, 1, 3, 1);
+    private JTextArea tableHeader = addTextArea("", 1, 1, 4, 1);
     private final int COLUMNS = 50;
     private EmployeeGUI employeeGui = new EmployeeGUI(frame, this);
     private Employee[] employeeList = new Employee[10];
     private FindEmployeeGUI findEmployeeGui = new FindEmployeeGUI(frame, this, employeeList);
     private JButton findEmployee = addButton("Find Employee", 2, 2, 1, 1);
     private JButton findLowestSales = addButton("Lowest Sales", 2, 3 , 1 ,1);
-    private JButton findHighestSales = addButton("Lowest Sales", 2, 3 , 1 ,1);
+    private JButton findHighestSales = addButton("Highest Sales", 2, 4 , 1 ,1);
     private Sales sales = new Sales();
 
     public Employee[] getEmployeeList() {
@@ -140,20 +140,21 @@ public class AceWidgetGUI extends GBFrame {
     public AceWidgetGUI() {
         tableHeader.setEditable(false);
         String name = Format.justify('l', "Name", 10);
-        String q1Label = Format.justify('l', "  Q1", COLUMNS);
-        String q2Label = Format.justify('l', "  Q2", COLUMNS);
-        String q3Label = Format.justify('l', "  Q3", COLUMNS);
-        String q4Label = Format.justify('l', "  Q4", COLUMNS);
-        String totalLabel = Format.justify('l', "Total", COLUMNS);
+        String q1Label = Format.justify('c', "  Q1", COLUMNS);
+        String q2Label = Format.justify('c', "  Q2", COLUMNS);
+        String q3Label = Format.justify('c', "  Q3", COLUMNS);
+        String q4Label = Format.justify('c', "  Q4", COLUMNS);
+        String totalLabel = Format.justify('c', "Total", COLUMNS);
         String lineBreak = "————————————————————————————————————————————————————————————————————";
         table = name+q1Label+q2Label+q3Label+q4Label+totalLabel + "\n" + lineBreak;
         tableHeader.setText(table);
         findEmployee.setEnabled(false);
+        findHighestSales.setEnabled(false);
+        findLowestSales.setEnabled(false);
 
     }
 
     public static void main(String[] args) {
-
         frame.setTitle("Ace Widget Employee Sales");
         frame.setSize(800, 400);
         frame.setVisible(true);
@@ -167,6 +168,10 @@ public class AceWidgetGUI extends GBFrame {
                 return;
             } else if(employeeList[i] == null) {
                 employeeList[i] = emp;
+                if(sales.getLowSales() == 0) {
+                    sales.setLowSales(emp.getTotal());
+                    sales.setLowNames(emp.getName());
+                }
                 if(emp.getTotal() > sales.getHighSales()) {
                     sales.setHighNames(emp.getName());
                     sales.setHighSales(emp.getTotal());
@@ -185,15 +190,19 @@ public class AceWidgetGUI extends GBFrame {
         double[] quarters = emp.getQuarters();
         double total = quarters[0] + quarters[1] + quarters[2] + quarters[3];
         String name = Format.justify('l', emp.getName(), 10);
-        String q1Label = Format.justify('r', formatter.format(quarters[0]), COLUMNS - formatter.format(quarters[0]).length());
-        String q2Label = Format.justify('r', formatter.format(quarters[1]), COLUMNS - formatter.format(quarters[1]).length());
-        String q3Label = Format.justify('r', formatter.format(quarters[2]), COLUMNS - formatter.format(quarters[2]).length());
-        String q4Label = Format.justify('r', formatter.format(quarters[3]), COLUMNS - formatter.format(quarters[3]).length());
-        String totalLabel = Format.justify('r', formatter.format(total), COLUMNS - formatter.format(total).length());
+        String q1Label = Format.justify('c', formatter.format(quarters[0]), COLUMNS);
+        String q2Label = Format.justify('c', formatter.format(quarters[1]), COLUMNS);
+        String q3Label = Format.justify('c', formatter.format(quarters[2]), COLUMNS);
+        String q4Label = Format.justify('c', formatter.format(quarters[3]), COLUMNS);
+        String totalLabel = Format.justify('c', formatter.format(total), COLUMNS);
         String add = "\n" + name + q1Label + q2Label + q3Label + q4Label + totalLabel;
         tableHeader.append(add);
         if(!findEmployee.isEnabled())
             findEmployee.setEnabled(true);
+        if(!findLowestSales.isEnabled())
+            findLowestSales.setEnabled(true);
+        if(!findHighestSales.isEnabled())
+            findHighestSales.setEnabled(true);
     }
 
 
@@ -202,9 +211,10 @@ public class AceWidgetGUI extends GBFrame {
             employeeGui.setVisible(true);
         if(jButton.equals(findEmployee))
             findEmployeeGui.setVisible(true);
-        if(jButton.equals(findLowestSales)) {
-            messageBox("The employee with the highest sales is: " + sales.getHighNames() + ": " + sales.getHighSales() );
-        }
+        if(jButton.equals(findHighestSales))
+            messageBox("The employee with the highest sales is: " + sales.getHighNames() + ": " + sales.getHighSales());
+        if(jButton.equals(findLowestSales))
+            messageBox("The employee with the lowest sales is: " + sales.getLowNames() + ": " + sales.getLowSales());
     }
 
     public static JFrame getInstance() {
