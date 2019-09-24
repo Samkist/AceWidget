@@ -101,9 +101,9 @@ public class AceWidgetGUI extends GBFrame {
     }
 
     class FindEmployeeGUI extends GBDialog {
-        AceWidgetGUI gui;
-        JList employeeList = addList(1, 1 , 1, 1);
-        JTextArea employeeDetails = addTextArea("", 1, 3, 2,1 );
+        private AceWidgetGUI gui;
+        private JList employeeList = addList(1, 1 , 1, 1);
+        private JTextArea employeeDetails = addTextArea("", 1, 3, 2,1 );
 
         public FindEmployeeGUI(JFrame parent, AceWidgetGUI gui, Employee[] empArr) {
             super(parent);
