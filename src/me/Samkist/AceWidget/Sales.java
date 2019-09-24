@@ -2,8 +2,8 @@ package me.Samkist.AceWidget;
 
 public class Sales {
 
-    String lowNames = "", highNames = "";
-    double lowSales = 0, highSales = 0;
+    private String lowNames = "", highNames = "";
+    private double lowSales = 0, highSales = 0;
 
     public String getLowNames() {
         return lowNames;
