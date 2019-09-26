@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.text.DecimalFormat;
 
 public class AceWidgetGUI extends GBFrame {
+
+    //Instance Variables
     private static JFrame frame = new AceWidgetGUI();
     private JButton addEmployee = addButton("Add Employee", 2, 1, 1, 1);
     private JTextArea tableHeader = addTextArea("", 1, 1, 4, 1);
@@ -19,21 +21,19 @@ public class AceWidgetGUI extends GBFrame {
     private JButton findLowestSales = addButton("Lowest Sales", 2, 3 , 1 ,1);
     private JButton findHighestSales = addButton("Highest Sales", 2, 4 , 1 ,1);
     private Sales sales = new Sales();
+    private DecimalFormat formatter = new DecimalFormat("$0.00");
+    private String table;
 
-    public Employee[] getEmployeeList() {
+    public Employee[] getEmployeeList() { //Returns the list object of employees
         return employeeList;
     }
 
-    public DecimalFormat getFormatter() {
+    public DecimalFormat getFormatter() { //Utility method for grabbing the dollar formatter
         return formatter;
     }
 
-    DecimalFormat formatter = new DecimalFormat("$0.00");
-    String table;
-
     class EmployeeGUI extends GBDialog {
-        Employee e;
-
+        private Employee e;
         private JLabel employeeNameLabel = addLabel("Employee Name:", 1, 1, 1, 1);
         private JTextField employeeNameField = addTextField("", 1, 2, 1, 1);
         private JLabel quarterOneLabel = addLabel("Quarter 1:", 2, 1, 1, 1);
@@ -50,13 +50,14 @@ public class AceWidgetGUI extends GBFrame {
         private AceWidgetGUI gui;
 
 
-        public EmployeeGUI(JFrame parent, AceWidgetGUI gui) {
+        public EmployeeGUI(JFrame parent/*Necessary for dialogue instantiation*/, AceWidgetGUI gui/*Points to main GUI*/) {
             super(parent);
             this.gui = gui;
             this.setTitle("Add Employee");
             this.setSize(400, 400);
             fields = new JTextField[5];
             quarters = new double[4];
+            //List of fields, just for large operations on all felds
             fields[0] = employeeNameField;
             fields[1] = quarterOneField;
             fields[2] = quarterTwoField;
@@ -65,7 +66,9 @@ public class AceWidgetGUI extends GBFrame {
         }
 
 
-
+        /*Listener for the add employee button, will take the data and submit it to
+        the main GUI class::addEmployee
+        */
         public void buttonClicked(JButton jButton) {
             if(jButton.equals(addEmployee)) {
                 if(errorCheck()) {
@@ -82,10 +85,12 @@ public class AceWidgetGUI extends GBFrame {
                 employeeGui.setVisible(false);
             }
         }
+        //Getter method for this frame
         public JFrame getFrame() {
             return frame;
         }
 
+        //Just a quick error check on some data
         private boolean errorCheck() {
             try {
                 quarters[0] = Double.parseDouble(quarterOneField.getText());
@@ -99,12 +104,14 @@ public class AceWidgetGUI extends GBFrame {
         }
 
     }
-
+    //Employee listing GUI class
     class FindEmployeeGUI extends GBDialog {
+        //Instance Variables
         private AceWidgetGUI gui;
         private JList employeeList = addList(1, 1 , 1, 1);
         private JTextArea employeeDetails = addTextArea("", 1, 3, 2,1 );
 
+        //Instantiates the object same as the other nested class
         public FindEmployeeGUI(JFrame parent, AceWidgetGUI gui, Employee[] empArr) {
             super(parent);
             this.gui = gui;
@@ -113,12 +120,14 @@ public class AceWidgetGUI extends GBFrame {
             this.setSize(400, 400);
         }
 
+        //Adds an element to the list with the name of the employee, if clicked it sends the index to the array grabbing the info
         @SuppressWarnings("unchecked")
         public void addListItem(String add) {
             DefaultListModel model = (DefaultListModel)employeeList.getModel();
             model.addElement(add);
         }
 
+        //Will set the locked text area to the employee selected
         public void updateEmployeeDetails(Employee emp) {
             double[] quarters = emp.getQuarters();
             employeeDetails.setText("" +
@@ -130,6 +139,7 @@ public class AceWidgetGUI extends GBFrame {
                     + "");
         }
 
+        //Listens for list object selections same as buttonClicked
         public void listItemSelected (JList listObj) {
             if(listObj.equals(employeeList)) {
                 updateEmployeeDetails(gui.getEmployeeList()[listObj.getSelectedIndex()]);
@@ -137,6 +147,7 @@ public class AceWidgetGUI extends GBFrame {
         }
     }
 
+    //Constructor for main class, sets up main table and sets buttons disabled until further notice
     public AceWidgetGUI() {
         tableHeader.setEditable(false);
         String name = Format.justify('l', "Name", 10);
@@ -154,19 +165,21 @@ public class AceWidgetGUI extends GBFrame {
 
     }
 
+    //Main, doesn't do much except start the program
     public static void main(String[] args) {
         frame.setTitle("Ace Widget Employee Sales");
         frame.setSize(800, 400);
         frame.setVisible(true);
     }
 
+    //This is the method called from the EmployeeGUI, the data is taken from there and sent to this method for processing
     public void addEmployee(Employee emp) {
         for(int i = 0; i < employeeList.length; i++) {
             if(i + 1 == employeeList.length) {
                 System.out.println(employeeList.length + " " + i);
                 messageBox("Could not add anymore employees!");
                 return;
-            } else if(employeeList[i] == null) {
+            } else if(employeeList[i] == null) { //This else if bracket handles the sales for all the employees
                 employeeList[i] = emp;
                 if(sales.getLowSales() == 0) {
                     sales.setLowSales(emp.getTotal());
@@ -187,8 +200,10 @@ public class AceWidgetGUI extends GBFrame {
                 break;
             }
         }
+        //Sets up local employee quarters array
         double[] quarters = emp.getQuarters();
         double total = quarters[0] + quarters[1] + quarters[2] + quarters[3];
+        //Formats employee data
         String name = Format.justify('l', emp.getName(), 10);
         String q1Label = Format.justify('c', formatter.format(quarters[0]), COLUMNS);
         String q2Label = Format.justify('c', formatter.format(quarters[1]), COLUMNS);
@@ -197,6 +212,7 @@ public class AceWidgetGUI extends GBFrame {
         String totalLabel = Format.justify('c', formatter.format(total), COLUMNS);
         String add = "\n" + name + q1Label + q2Label + q3Label + q4Label + totalLabel;
         tableHeader.append(add);
+        //Enables disabled buttons
         if(!findEmployee.isEnabled())
             findEmployee.setEnabled(true);
         if(!findLowestSales.isEnabled())
@@ -205,7 +221,7 @@ public class AceWidgetGUI extends GBFrame {
             findHighestSales.setEnabled(true);
     }
 
-
+    //Button event listener
     public void buttonClicked(JButton jButton) {
         if(jButton.equals(addEmployee))
             employeeGui.setVisible(true);
@@ -217,6 +233,7 @@ public class AceWidgetGUI extends GBFrame {
             messageBox("The employee with the lowest sales is: " + sales.getLowNames() + ": " + sales.getLowSales());
     }
 
+    //Getter method
     public static JFrame getInstance() {
         return frame;
     }

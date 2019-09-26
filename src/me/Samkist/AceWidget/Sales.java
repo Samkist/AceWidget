@@ -2,9 +2,12 @@ package me.Samkist.AceWidget;
 
 public class Sales {
 
+    //Instance variables
     private String lowNames = "", highNames = "";
     private double lowSales = 0, highSales = 0;
 
+
+    //A ton of Get/Sets
     public String getLowNames() {
         return lowNames;
     }

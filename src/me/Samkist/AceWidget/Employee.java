@@ -2,7 +2,10 @@ package me.Samkist.AceWidget;
 
 public class Employee {
 
+    //Instance variabless
     private double total;
+    private String name;
+    private double[] quarters;
 
     public String getName() {
         return name;
@@ -12,8 +15,6 @@ public class Employee {
         this.name = name;
     }
 
-    private String name;
-
     public double[] getQuarters() {
         return quarters;
     }
@@ -22,8 +23,7 @@ public class Employee {
         this.quarters = quarters;
     }
 
-    private double[] quarters;
-
+    //Constructor
     public Employee(String name, double[] quarters) {
         this.name = name;
         this.quarters = quarters;
